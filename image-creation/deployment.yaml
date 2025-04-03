@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: django-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: django
+  template:
+    metadata:
+      labels:
+        app: django
+    spec:
+      containers:
+      - name: django
+        image: floral-classical-ant.dkr.ecr.ap-south-1.amazonaws.com/my-django-app:latest
+        ports:
+        - containerPort: 8000
+        resources:
+         limits:
+          cpu: "500m"      # Maximum 0.5 CPU cores
+          memory: "512Mi"  # Maximum 512MB RAM
+        requests:
+          cpu: "250m"      # Request 0.25 CPU cores
+          memory: "256Mi"  # Request 256MB RAM
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: django-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: django
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000

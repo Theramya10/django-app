@@ -1,0 +1,28 @@
+pipeline {
+    agent any
+    environment {
+        AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY')
+        AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_KEY')
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                git 'https://github.com/Theramya10/django-app.git'
+            }
+        }
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t my-django-app:latest ./django-app'
+            }
+        }
+        stage('Push to ECR') {
+            steps {
+                sh '''
+                $(aws ecr get-login --no-include-email --region ap-south-1)
+                docker tag my-django-app:latest floral-classical-ant.dkr.ecr.ap-south-1.amazonaws.com/my-django-app:latest
+                docker push 123456789012.dkr.ecr.ap-south-1.amazonaws.com/my-django-app:latest
+                '''
+            }
+        }
+    }
+}
