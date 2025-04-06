@@ -7,11 +7,19 @@ resource "aws_vpc" "eks_vpc" {
   cidr_block = "10.0.0.0/16"
 }
 
-# Subnet
-resource "aws_subnet" "eks_public" {
+# Subnet-1
+resource "aws_subnet" "eks_public-1" {
   vpc_id                  = aws_vpc.eks_vpc.id
   cidr_block              = "10.0.1.0/24"
   availability_zone       = "ap-south-1a"
+  map_public_ip_on_launch = true
+}
+
+# Subnet-2
+resource "aws_subnet" "eks_public-2" {
+  vpc_id                  = aws_vpc.eks_vpc.id
+  cidr_block              = "10.0.2.0/24"
+  availability_zone       = "ap-south-1b"
   map_public_ip_on_launch = true
 }
 
@@ -99,7 +107,7 @@ resource "aws_eks_cluster" "eks" {
   role_arn = aws_iam_role.eks_role.arn
 
   vpc_config {
-    subnet_ids = [aws_subnet.eks_public.id]
+    subnet_ids = [aws_subnet.eks_public_1.id, aws_subnet.eks_public_2.id]
     security_group_ids = [aws_security_group.eks_sg.id]
   }
 
@@ -116,7 +124,7 @@ resource "aws_eks_cluster" "eks" {
 resource "aws_eks_node_group" "eks_nodes" {
   cluster_name    = aws_eks_cluster.eks.name
   node_role_arn   = aws_iam_role.node_role.arn
-  subnet_ids      = [aws_subnet.eks_public.id]
+  subnet_ids      = [aws_subnet.eks_public_1.id, aws_subnet.eks_public_2.id]
   instance_types  = ["t3.large"]
 
   scaling_config {
