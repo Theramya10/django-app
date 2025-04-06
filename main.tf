@@ -8,7 +8,7 @@ resource "aws_vpc" "eks_vpc" {
 }
 
 # Subnet-1
-resource "aws_subnet" "eks_public-1" {
+resource "aws_subnet" "eks_public_1" {
   vpc_id                  = aws_vpc.eks_vpc.id
   cidr_block              = "10.0.1.0/24"
   availability_zone       = "ap-south-1a"
@@ -16,7 +16,7 @@ resource "aws_subnet" "eks_public-1" {
 }
 
 # Subnet-2
-resource "aws_subnet" "eks_public-2" {
+resource "aws_subnet" "eks_public_2" {
   vpc_id                  = aws_vpc.eks_vpc.id
   cidr_block              = "10.0.2.0/24"
   availability_zone       = "ap-south-1b"
